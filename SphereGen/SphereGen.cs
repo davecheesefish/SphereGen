@@ -13,6 +13,9 @@ namespace SphereGen
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        KeyboardState keyboardState;
+        KeyboardState pastKeyboardState;
+
         Camera camera;
         Sphere sphere;
 
@@ -34,6 +37,9 @@ namespace SphereGen
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
+
+            keyboardState = Keyboard.GetState();
+            pastKeyboardState = keyboardState;
 
             sphere = new Sphere();
             camera = new Camera(new Vector3(0, 0, -2), Vector3.Zero, MathHelper.PiOver4, (float)graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight);
@@ -66,8 +72,19 @@ namespace SphereGen
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            // Update the keyboard state.
+            pastKeyboardState = keyboardState;
+            keyboardState = Keyboard.GetState();
+
+            // Exit if escape is pressed.
+            if (keyboardState.IsKeyDown(Keys.Escape))
                 Exit();
+
+            // Refine the sphere if space is pressed.
+            if (keyboardState.IsKeyUp(Keys.Space) && pastKeyboardState.IsKeyDown(Keys.Space))
+            {
+                sphere.Refine();
+            }
 
             camera.Position = new Vector3((float)(3.0 * Math.Sin(gameTime.TotalGameTime.TotalSeconds)), 0, (float)(3.0 * Math.Cos(gameTime.TotalGameTime.TotalSeconds)));
 

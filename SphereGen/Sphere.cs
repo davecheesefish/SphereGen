@@ -6,7 +6,7 @@ using SphereGen.Graphics;
 namespace SphereGen
 {
     /// <summary>
-    /// A sphere of unit radius, contructed of equal triangles.
+    /// A sphere of unit radius, contructed of triangles.
     /// </summary>
     class Sphere
     {
@@ -82,6 +82,56 @@ namespace SphereGen
         }
 
         /// <summary>
+        /// Refines the shape to be closer to a true sphere by subdividing the current faces.
+        /// </summary>
+        public void Refine()
+        {
+            // Create a container for the new faces of the sphere.
+            List<Triangle> newFaces = new List<Triangle>();
+
+            // For each current triangular face, replace it with 4 smaller triangles in a "triforce" pattern.
+            foreach (Triangle face in faces)
+            {
+                // Get the midpoints of each edge. These will form the new extra vertices.
+                // The midpoint is merely the average of the two corner vectors.
+                Vector3 midpoint1 = new Vector3(
+                    0.5f * (face.Vertex1.X + face.Vertex2.X),
+                    0.5f * (face.Vertex1.Y + face.Vertex2.Y),
+                    0.5f * (face.Vertex1.Z + face.Vertex2.Z)
+                );
+
+                Vector3 midpoint2 = new Vector3(
+                    0.5f * (face.Vertex2.X + face.Vertex3.X),
+                    0.5f * (face.Vertex2.Y + face.Vertex3.Y),
+                    0.5f * (face.Vertex2.Z + face.Vertex3.Z)
+                );
+
+                Vector3 midpoint3 = new Vector3(
+                    0.5f * (face.Vertex3.X + face.Vertex1.X),
+                    0.5f * (face.Vertex3.Y + face.Vertex1.Y),
+                    0.5f * (face.Vertex3.Z + face.Vertex1.Z)
+                );
+
+                // Normalise the midpoints so that they are on the surface of the unit sphere.
+                midpoint1.Normalize();
+                midpoint2.Normalize();
+                midpoint3.Normalize();
+
+                // Create the new triangles.
+                newFaces.Add(new Triangle(face.Vertex1, midpoint1, midpoint3));
+                newFaces.Add(new Triangle(midpoint1, midpoint2, midpoint3));
+                newFaces.Add(new Triangle(midpoint1, face.Vertex2, midpoint2));
+                newFaces.Add(new Triangle(midpoint3, midpoint2, face.Vertex3));
+            }
+
+            // Set the shape to use the new faces.
+            faces = newFaces;
+
+            // The geometry needs rebuilding to match the new face data, so set the rebuild flag.
+            dirtyGeometry = true;
+        }
+
+        /// <summary>
         /// Reconstructs the vertex buffer from face data.
         /// </summary>
         private void RecontructVertices(GraphicsDevice graphicsDevice)
@@ -90,9 +140,10 @@ namespace SphereGen
             if (effect == null)
             {
                 effect = new BasicEffect(graphicsDevice);
+                effect.VertexColorEnabled = true;
                 effect.LightingEnabled = true;
-                effect.AmbientLightColor = new Vector3(0.2f, 0.2f, 0.2f);
-                effect.DirectionalLight0.DiffuseColor = new Vector3(0.6f, 0.3f, 0.0f);
+                effect.AmbientLightColor = new Vector3(0.4f, 0.4f, 0.4f);
+                effect.DirectionalLight0.DiffuseColor = new Vector3(0.2f, 0.2f, 0.2f);
                 effect.DirectionalLight0.SpecularColor = new Vector3(0.5f, 0.5f, 0.0f);
             }
 
