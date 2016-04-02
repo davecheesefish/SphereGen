@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -11,6 +12,9 @@ namespace SphereGen
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
+        Camera camera;
+        Sphere sphere;
 
         public SphereGen()
         {
@@ -31,6 +35,9 @@ namespace SphereGen
             graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
 
+            sphere = new Sphere();
+            camera = new Camera(new Vector3(0, 0, -2), Vector3.Zero, MathHelper.PiOver4, (float)graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight);
+
             base.Initialize();
         }
 
@@ -42,8 +49,6 @@ namespace SphereGen
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -52,7 +57,6 @@ namespace SphereGen
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
 
         /// <summary>
@@ -65,7 +69,7 @@ namespace SphereGen
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            camera.Position = new Vector3((float)(3.0 * Math.Sin(gameTime.TotalGameTime.TotalSeconds)), 0, (float)(3.0 * Math.Cos(gameTime.TotalGameTime.TotalSeconds)));
 
             base.Update(gameTime);
         }
@@ -78,7 +82,7 @@ namespace SphereGen
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
+            sphere.Draw(GraphicsDevice, camera);
 
             base.Draw(gameTime);
         }
