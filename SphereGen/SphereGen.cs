@@ -26,7 +26,10 @@ namespace SphereGen
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            // Set graphics resolution.
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
+            graphics.ApplyChanges();
 
             base.Initialize();
         }
@@ -73,7 +76,7 @@ namespace SphereGen
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
 
