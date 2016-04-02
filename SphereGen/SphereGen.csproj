@@ -39,6 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Camera.cs" />
+    <Compile Include="Graphics\VertexPositionColorNormal.cs" />
     <Compile Include="Sphere.cs" />
     <Compile Include="SphereGen.cs" />
     <Compile Include="Program.cs" />

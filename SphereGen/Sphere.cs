@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SphereGen.Graphics;
 
 namespace SphereGen
 {
@@ -63,9 +64,15 @@ namespace SphereGen
                 RecontructVertices(graphicsDevice);
             }
 
-            // Draw the shape.
+            // Set up the effect.
+            // Align the effect's transformation matrices with the camera.
             effect.View = camera.LookAtMatrix;
             effect.Projection = camera.ProjectionMatrix;
+
+            // Set the light to be pointing out from the camera.
+            effect.DirectionalLight0.Direction = camera.Target - camera.Position;
+
+            // Draw the shape.
             graphicsDevice.SetVertexBuffer(vertexBuffer);
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
@@ -83,20 +90,25 @@ namespace SphereGen
             if (effect == null)
             {
                 effect = new BasicEffect(graphicsDevice);
+                effect.LightingEnabled = true;
+                effect.AmbientLightColor = new Vector3(0.2f, 0.2f, 0.2f);
+                effect.DirectionalLight0.DiffuseColor = new Vector3(0.6f, 0.3f, 0.0f);
+                effect.DirectionalLight0.SpecularColor = new Vector3(0.5f, 0.5f, 0.0f);
             }
 
-            vertexBuffer = new VertexBuffer(graphicsDevice, typeof(VertexPositionColor), faces.Count * 3, BufferUsage.WriteOnly);
+            vertexBuffer = new VertexBuffer(graphicsDevice, typeof(VertexPositionColorNormal), faces.Count * 3, BufferUsage.WriteOnly);
 
             // Create the vertices
-            VertexPositionColor[] vertices = new VertexPositionColor[faces.Count * 3];
+            VertexPositionColorNormal[] vertices = new VertexPositionColorNormal[faces.Count * 3];
             int i = 0;
             foreach (Triangle face in faces)
             {
-                vertices[i++] = new VertexPositionColor(face.Vertex1, Color.Orange);
-                vertices[i++] = new VertexPositionColor(face.Vertex2, Color.Orange);
-                vertices[i++] = new VertexPositionColor(face.Vertex3, Color.Orange);
+                Vector3 normal = face.GetNormal();
+                vertices[i++] = new VertexPositionColorNormal(face.Vertex1, Color.Orange, normal);
+                vertices[i++] = new VertexPositionColorNormal(face.Vertex2, Color.Orange, normal);
+                vertices[i++] = new VertexPositionColorNormal(face.Vertex3, Color.Orange, normal);
             }
-            vertexBuffer.SetData<VertexPositionColor>(vertices);
+            vertexBuffer.SetData<VertexPositionColorNormal>(vertices);
 
             // Set the geometry rebuild flag back to false.
             dirtyGeometry = false;
