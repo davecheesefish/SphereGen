@@ -9,10 +9,15 @@ namespace SphereGen
     /// <summary>
     /// A sphere of unit radius, contructed of triangles.
     /// </summary>
-    class Sphere
+    class Icosphere
     {
         /// <summary>
-        /// List of the triangular faces that make up this sphere.
+        /// The number of triangular faces that make up this icosphere.
+        /// </summary>
+        public int FaceCount { get { return faces.Count; } }
+        
+        /// <summary>
+        /// List of the triangular faces that make up this icosphere.
         /// </summary>
         private List<Triangle> faces;
 
@@ -32,7 +37,7 @@ namespace SphereGen
         private bool dirtyGeometry = false;
 
 
-        public Sphere()
+        public Icosphere()
         {
             // Create an icosahedron as the base shape
             // Create the 12 vertices.

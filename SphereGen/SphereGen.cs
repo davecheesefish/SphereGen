@@ -12,12 +12,15 @@ namespace SphereGen
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        SpriteFont hudFont;
 
         KeyboardState keyboardState;
         KeyboardState pastKeyboardState;
 
         Camera camera;
-        Sphere sphere;
+        Icosphere sphere;
+
+        int refineCount = 0;
 
         public SphereGen()
         {
@@ -41,7 +44,7 @@ namespace SphereGen
             keyboardState = Keyboard.GetState();
             pastKeyboardState = keyboardState;
 
-            sphere = new Sphere();
+            sphere = new Icosphere();
             camera = new Camera(new Vector3(0, 0, -2), Vector3.Zero, MathHelper.PiOver4, (float)graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight);
 
             base.Initialize();
@@ -55,6 +58,8 @@ namespace SphereGen
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            hudFont = Content.Load<SpriteFont>("fonts/hudfont");
         }
 
         /// <summary>
@@ -84,9 +89,10 @@ namespace SphereGen
             if (keyboardState.IsKeyUp(Keys.Space) && pastKeyboardState.IsKeyDown(Keys.Space))
             {
                 sphere.Refine();
+                ++refineCount;
             }
 
-            camera.Position = new Vector3((float)(3.0 * Math.Sin(gameTime.TotalGameTime.TotalSeconds)), 0, (float)(3.0 * Math.Cos(gameTime.TotalGameTime.TotalSeconds)));
+            camera.Position = new Vector3((float)(3.0 * Math.Sin(gameTime.TotalGameTime.TotalSeconds)), 0.5f, (float)(3.0 * Math.Cos(gameTime.TotalGameTime.TotalSeconds)));
 
             base.Update(gameTime);
         }
@@ -100,6 +106,12 @@ namespace SphereGen
             GraphicsDevice.Clear(Color.Black);
 
             sphere.Draw(GraphicsDevice, camera);
+
+            spriteBatch.Begin();
+            double fps = 1.0 / gameTime.ElapsedGameTime.TotalSeconds;
+            spriteBatch.DrawString(hudFont, "Refinements: " + refineCount.ToString() + "  Faces: " + sphere.FaceCount.ToString() + "  FPS: " + fps.ToString(), new Vector2(10, 10), Color.White);
+            spriteBatch.DrawString(hudFont, "David Prior 2016 - davecheesefish.com - davidprior.media", new Vector2(10, GraphicsDevice.Viewport.Height - 25), Color.DarkGray);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
