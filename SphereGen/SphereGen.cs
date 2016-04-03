@@ -41,6 +41,8 @@ namespace SphereGen
             graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
 
+            this.IsFixedTimeStep = false;
+
             keyboardState = Keyboard.GetState();
             pastKeyboardState = keyboardState;
 
@@ -109,7 +111,7 @@ namespace SphereGen
 
             spriteBatch.Begin();
             double fps = 1.0 / gameTime.ElapsedGameTime.TotalSeconds;
-            spriteBatch.DrawString(hudFont, "Refinements: " + refineCount.ToString() + "  Faces: " + sphere.FaceCount.ToString() + "  FPS: " + fps.ToString(), new Vector2(10, 10), Color.White);
+            spriteBatch.DrawString(hudFont, "Refinements: " + refineCount.ToString() + "  Faces: " + sphere.FaceCount.ToString() + "  FPS: " + Math.Floor(fps).ToString(), new Vector2(10, 10), Color.White);
             spriteBatch.DrawString(hudFont, "David Prior 2016 - davecheesefish.com - davidprior.media", new Vector2(10, GraphicsDevice.Viewport.Height - 25), Color.DarkGray);
             spriteBatch.End();
 
